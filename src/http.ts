@@ -77,18 +77,23 @@ const httpServer = createServer(async (req, res) => {
 
   const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
 
-  // Health check for the reverse proxy / monitoring.
-  if (req.method === "GET" && (url.pathname === "/healthz" || url.pathname === "/")) {
+  // Health check (GET/HEAD on / or /healthz) for proxies, monitoring and probes.
+  if ((req.method === "GET" || req.method === "HEAD") && (url.pathname === "/" || url.pathname === "/healthz")) {
+    if (req.method === "HEAD") {
+      res.writeHead(200);
+      return res.end();
+    }
     return json(res, 200, { ok: true, service: "verifyanyemail-mcp", version: PKG_VERSION, transport: "streamable-http" });
   }
 
-  if (url.pathname !== "/mcp") {
+  // MCP endpoint. Accept the JSON-RPC POST at /mcp AND at / (some clients are
+  // configured with the base URL). Everything else is not found.
+  const isMcpPath = url.pathname === "/mcp" || url.pathname === "/";
+  if (!isMcpPath) {
     return json(res, 404, { error: "not_found" });
   }
-
-  // Stateless Streamable HTTP: all JSON-RPC rides on POST.
   if (req.method !== "POST") {
-    return json(res, 405, { error: "method_not_allowed", message: "Use POST for the stateless MCP endpoint." });
+    return json(res, 405, { error: "method_not_allowed", message: "POST a JSON-RPC message to this MCP endpoint." });
   }
 
   const apiKey = extractKey(req);
