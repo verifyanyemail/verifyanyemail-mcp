@@ -1,6 +1,6 @@
 {
   "name": "verifyanyemail-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Model Context Protocol (MCP) server for VerifyAnyEmail — real-time email verification and deliverability diagnostics for AI agents (Claude, ChatGPT, Cursor, and any MCP client).",
   "license": "MIT",
   "author": "VerifyAnyEmail",
@@ -37,9 +37,10 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --clean --target node18 --sourcemap",
+    "build": "tsup src/index.ts src/http.ts --format esm --clean --target node18 --sourcemap",
     "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
+    "start:http": "node dist/http.js",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
