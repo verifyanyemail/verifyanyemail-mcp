@@ -1,0 +1,55 @@
+{
+  "manifest_version": "0.2",
+  "name": "verifyanyemail",
+  "display_name": "VerifyAnyEmail",
+  "version": "1.0.0",
+  "description": "Real-time email verification and deliverability diagnostics for AI agents.",
+  "long_description": "Verify whether email addresses are real and safe to send to, run bulk verification jobs, and check domain deliverability (MX, SPF, DKIM, DMARC) — all from inside your AI assistant. Backed by the VerifyAnyEmail API.",
+  "author": {
+    "name": "VerifyAnyEmail",
+    "url": "https://verifyany.email"
+  },
+  "homepage": "https://verifyany.email/mcp",
+  "documentation": "https://verifyany.email/mcp",
+  "support": "https://github.com/verifyanyemail/verifyanyemail-mcp/issues",
+  "license": "MIT",
+  "keywords": ["email", "verification", "deliverability", "mcp", "ai", "agents"],
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "VERIFYANYEMAIL_API_KEY": "${user_config.api_key}"
+      }
+    }
+  },
+  "tools": [
+    { "name": "verify_email", "description": "Verify a single email address in real time." },
+    { "name": "verify_batch", "description": "Submit many addresses for async bulk verification." },
+    { "name": "get_batch_status", "description": "Poll a bulk verification batch's progress." },
+    { "name": "get_batch_results", "description": "Fetch a page of batch results." },
+    { "name": "check_mx", "description": "Look up a domain's MX records." },
+    { "name": "check_spf", "description": "Check a domain's SPF record." },
+    { "name": "check_dmarc", "description": "Check a domain's DMARC policy." },
+    { "name": "check_dkim", "description": "Check a domain's DKIM record for a selector." },
+    { "name": "check_domain_health", "description": "Overall email deliverability health grade for a domain." }
+  ],
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "VerifyAnyEmail API Key",
+      "description": "Your vae_... API key from the VerifyAnyEmail dashboard (Settings → API Keys).",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}
