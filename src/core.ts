@@ -12,7 +12,7 @@ import {
   type VerificationResult,
 } from "verifyanyemail";
 
-export const PKG_VERSION = "1.2.0";
+export const PKG_VERSION = "1.2.1";
 export const DEFAULT_BASE_URL = "https://api.verifyany.email";
 
 // ---------------------------------------------------------------------------
@@ -190,6 +190,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
       smtpProbe: z.boolean().optional().describe("Set false to skip the live SMTP mailbox probe (DNS-only). Default true."),
       catchAllDetection: z.boolean().optional().describe("Set false to skip catch-all detection. Default true."),
     },
+    { title: "Verify Email Address", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ email, smtpProbe, catchAllDetection }) =>
       guard(async () => ok(summarizeVerification(await getClient().sdk.verify(email, { smtpProbe, catchAllDetection })))),
   );
@@ -204,6 +205,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
       name: z.string().max(200).optional().describe("Optional human-friendly label for the batch."),
       webhookUrl: z.string().url().optional().describe("Optional HTTPS URL to receive a signed batch.completed callback."),
     },
+    { title: "Verify Emails in Bulk", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ emails, name, webhookUrl }) =>
       guard(async () => {
         const b = await getClient().sdk.verifyBatch(emails, { name, webhookUrl });
@@ -216,6 +218,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
     "Check the progress of a bulk verification batch: lifecycle state (queued | processing | completed | failed), " +
       "addresses processed, and per-status counts once available.",
     { batchId: z.string().min(1).describe("The batchId returned by verify_batch.") },
+    { title: "Get Bulk Verification Status", readOnlyHint: true, openWorldHint: false },
     async ({ batchId }) => guard(async () => ok(await getClient().sdk.getBatch(batchId))),
   );
 
@@ -227,6 +230,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
       page: z.number().int().min(1).optional().describe("1-based page number. Default 1."),
       pageSize: z.number().int().min(1).max(1000).optional().describe("Rows per page (1–1000). Default 100."),
     },
+    { title: "Get Bulk Verification Results", readOnlyHint: true, openWorldHint: false },
     async ({ batchId, page, pageSize }) => guard(async () => ok(await getClient().sdk.getBatchResults(batchId, { page, pageSize }))),
   );
 
@@ -234,6 +238,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
     "check_mx",
     "Look up a domain's MX (mail exchanger) records and whether it can receive email. Free — no verification credits.",
     domainArg,
+    { title: "Check MX Records", readOnlyHint: true, openWorldHint: true },
     async ({ domain }) => guard(async () => ok(await getClient().diagnostic("/v1/tools/mx", { domain }))),
   );
 
@@ -241,6 +246,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
     "check_spf",
     "Check a domain's SPF record and flag common misconfigurations. Free — no verification credits.",
     domainArg,
+    { title: "Check SPF Record", readOnlyHint: true, openWorldHint: true },
     async ({ domain }) => guard(async () => ok(await getClient().diagnostic("/v1/tools/spf", { domain }))),
   );
 
@@ -248,6 +254,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
     "check_dmarc",
     "Check a domain's DMARC policy (none | quarantine | reject) and alignment. Free — no verification credits.",
     domainArg,
+    { title: "Check DMARC Policy", readOnlyHint: true, openWorldHint: true },
     async ({ domain }) => guard(async () => ok(await getClient().diagnostic("/v1/tools/dmarc", { domain }))),
   );
 
@@ -255,6 +262,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
     "check_dkim",
     "Check a domain's DKIM signing record for a given selector. Free — no verification credits.",
     { ...domainArg, selector: z.string().max(120).optional().describe("The DKIM selector, e.g. 'google' or 'mail'. Optional.") },
+    { title: "Check DKIM Record", readOnlyHint: true, openWorldHint: true },
     async ({ domain, selector }) => guard(async () => ok(await getClient().diagnostic("/v1/tools/dkim", { domain, selector }))),
   );
 
@@ -263,6 +271,7 @@ export function registerTools(server: McpServer, getClient: ClientProvider): voi
     "Run an overall email-deliverability health check for a domain — combines MX, SPF, DKIM, DMARC and related " +
       "signals into a single graded summary with actionable findings. Free — no verification credits.",
     domainArg,
+    { title: "Check Domain Email Health", readOnlyHint: true, openWorldHint: true },
     async ({ domain }) => guard(async () => ok(await getClient().diagnostic("/v1/tools/health", { domain }))),
   );
 }

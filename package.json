@@ -1,6 +1,6 @@
 {
   "name": "verifyanyemail-mcp",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Model Context Protocol (MCP) server for VerifyAnyEmail — real-time email verification and deliverability diagnostics for AI agents (Claude, ChatGPT, Cursor, and any MCP client).",
   "license": "MIT",
   "author": "VerifyAnyEmail",
