@@ -4,3 +4,5 @@ data/
 *.tsbuildinfo
 *.log
 .DS_Store
+verifyanyemail-plugin.zip
+chatgpt-plugin/assets/
