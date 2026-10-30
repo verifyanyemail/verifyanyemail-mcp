@@ -7,7 +7,7 @@
   "homepage": "https://verifyany.email",
   "repository": {
     "type": "git",
-    "url": "https://github.com/verifyanyemail/verifyanyemail-mcp"
+    "url": "git+https://github.com/verifyanyemail/verifyanyemail-mcp.git"
   },
   "bugs": {
     "url": "https://github.com/verifyanyemail/verifyanyemail-mcp/issues"
@@ -26,7 +26,7 @@
   ],
   "type": "module",
   "bin": {
-    "verifyanyemail-mcp": "./dist/index.js"
+    "verifyanyemail-mcp": "dist/index.js"
   },
   "files": [
     "dist",
