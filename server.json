@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.verifyanyemail/verifyanyemail-mcp",
+  "title": "VerifyAnyEmail",
+  "description": "Real-time email verification and deliverability diagnostics (MX, SPF, DKIM, DMARC).",
+  "version": "1.2.3",
+  "websiteUrl": "https://verifyany.email/mcp",
+  "repository": {
+    "url": "https://github.com/verifyanyemail/verifyanyemail-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.verifyany.email/mcp"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "verifyanyemail-mcp",
+      "version": "1.2.3",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
