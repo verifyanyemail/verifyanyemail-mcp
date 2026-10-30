@@ -12,7 +12,7 @@ import {
   type VerificationResult,
 } from "verifyanyemail";
 
-export const PKG_VERSION = "1.2.1";
+export const PKG_VERSION = "1.2.2";
 export const DEFAULT_BASE_URL = "https://api.verifyany.email";
 
 // ---------------------------------------------------------------------------

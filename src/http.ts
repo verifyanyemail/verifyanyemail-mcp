@@ -12,6 +12,7 @@
  *      MAX_BODY_BYTES (4194304).
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { readFileSync } from "node:fs";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { registerTools, VaeClient, ApiKeyMissingError, PKG_VERSION, DEFAULT_BASE_URL } from "./core.js";
@@ -23,6 +24,9 @@ const BASE_URL = process.env.VERIFYANYEMAIL_BASE_URL?.trim() || DEFAULT_BASE_URL
 const ISSUER = (process.env.MCP_ISSUER?.trim() || "https://mcp.verifyany.email").replace(/\/+$/, "");
 const OAUTH_STORE = process.env.OAUTH_STORE?.trim() || "/opt/verifyanyemail-mcp/data/oauth.json";
 const MAX_BODY_BYTES = Number(process.env.MAX_BODY_BYTES) || 4 * 1024 * 1024;
+// OpenAI (ChatGPT plugin) domain-verification token file, served as plain text
+// at /.well-known/openai-apps-challenge. Written when OpenAI issues the token.
+const CHALLENGE_FILE = process.env.OPENAI_CHALLENGE_FILE || "/opt/verifyanyemail-mcp/data/openai-challenge.txt";
 
 const oauth = new OAuthServer(ISSUER, BASE_URL, OAUTH_STORE);
 
@@ -81,6 +85,17 @@ const httpServer = createServer(async (req, res) => {
     if ((method === "GET" || method === "HEAD") && (path === "/" || path === "/healthz")) {
       if (method === "HEAD") { res.writeHead(200); return res.end(); }
       return json(res, 200, { ok: true, service: "verifyanyemail-mcp", version: PKG_VERSION, transport: "streamable-http" });
+    }
+
+    // OpenAI ChatGPT plugin domain-verification challenge (plain text).
+    if (method === "GET" && path === "/.well-known/openai-apps-challenge") {
+      try {
+        const tok = readFileSync(CHALLENGE_FILE, "utf8").trim();
+        res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+        return res.end(tok);
+      } catch {
+        return json(res, 404, { error: "challenge_not_configured" });
+      }
     }
 
     // OAuth metadata (RFC 8414 / RFC 9728).
